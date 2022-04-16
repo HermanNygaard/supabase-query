@@ -13,7 +13,11 @@ Supercharge your development speed with the best of both worlds from Supabase an
 
 ## Installation
 
-`npm i supabase-query`
+`yarn add supabase-query @supabase/supabase-js@^1 react-query@^3`
+
+or with npm:
+
+`npm i supabase-query @supabase/supabase-js@^1 react-query@^3`
 
 ## Quick start
 
@@ -47,7 +51,7 @@ function Todos() {
   // Access the client for invalidations
   const queryClient = useQueryClient();
   const { mutate, isLoading: isPosting } = useSupabaseMutation({
-    onSuccess: () => client.invalidateQueries("todos"),
+    onSuccess: () => queryClient.invalidateQueries("todos"),
   });
 
   if (isLoading) return <p>Loading...</p>;

@@ -1,6 +1,6 @@
 # supabase-query
 
-Supercharge your development speed with the best of both worlds from Supabase and react-query!
+Supercharge your development speed with Supabase and react-query, combined!
 
 ## Features
 
@@ -24,7 +24,11 @@ or with npm:
 ```tsx
 import { QueryClient, QueryClientProvider, useQueryClient } from "react-query";
 import { createClient } from "@supabase/supabase-js";
-import { SupabaseQueryProvider } from "supabase-query";
+import {
+  SupabaseQueryProvider,
+  useSupabaseMutation,
+  useSupabaseQuery,
+} from "supabase-query";
 
 const queryClient = new QueryClient();
 const supabaseClient = createClient("https://foo.bar", "key");
@@ -60,7 +64,7 @@ function Todos() {
     <div>
       <ul>
         {data.map((todo) => (
-          <li key={todo.id}>{todo.title}</li>
+          <li key={todo.id}>{todo.name}</li>
         ))}
       </ul>
       <button
@@ -77,6 +81,7 @@ function Todos() {
     </div>
   );
 }
+export default App;
 ```
 
 ## API
@@ -87,18 +92,21 @@ function Todos() {
 const { data, isLoading } = useSupabaseQuery(
   (supabase) => supabase.from("todos").select(),
   {
-    onSuccess: () => {},
+    onSuccess: () => {
+      alert("success");
+    },
     queryKey: ["todos", page],
   }
 );
 ```
 
 useSupabaseQuery accepts two arguments:
-The first is a function with the supabase client as an argument,
+The first is a function that provides the supabase client as an argument,
 and it expects a built query in return.
 
 The table name `"todos"` will by default be used as the queryKey for react-query.
-Second arg: react-query opts, see their docs for all options. The options object also takes in
+
+The second argument: react-query options, see their docs for all options. The options object also takes in
 `queryKey` if you want to override the default key for a more dynamic one.
 
 ### useSupabaseMutation

@@ -69,19 +69,28 @@ export function Todos() {
     onSuccess: () => client.invalidateQueries("todos"),
     onError: () => alert("noo"),
   });
-  console.log("yoo", ok);
+
   const [val, setVal] = useState("");
   if (isLoading) return <div>Loading...</div>;
 
   return (
-    <div>
-      {data?.map((t) => (
-        <div key={t.id}>
-          {t.name}
+    <div
+      style={{
+        display: "flex",
+        justifyContent: "center",
+        alignItems: "center",
+        marginBottom: "50vh",
+      }}
+    >
+      <div style={{ display: "flex", flexDirection: "column" }}>
+        {data?.map((t) => (
+          <div key={t.id}>
+            {t.name}
 
-          <DeleteButton id={t.id} />
-        </div>
-      ))}
+            <DeleteButton id={t.id} />
+          </div>
+        ))}
+      </div>
       <input type="number" onChange={({ target }) => setLimit(target.value)} />
       {JSON.stringify(error)}
       <input value={val} onChange={({ target }) => setVal(target.value)} />

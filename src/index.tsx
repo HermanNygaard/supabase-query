@@ -4,7 +4,6 @@ import React, { useContext } from "react";
 import {
   useMutation,
   UseMutationOptions,
-  UseMutationResult,
   useQuery,
   UseQueryOptions,
 } from "react-query";
@@ -33,15 +32,13 @@ type QueryCreator = (
   supabase: SupabaseClient
 ) => PostgrestFilterBuilder<any> & { _table?: string };
 
-const execute = (query: GeneratedQuery) =>
-  new Promise<any>(async (resolve, reject) => {
-    const { data, error } = await query;
-    if (data) {
-      resolve(data);
-    } else {
-      reject(error);
-    }
-  });
+async function execute(query: GeneratedQuery): Promise<any> {
+  const { data, error } = await query;
+  if (error) {
+    throw error;
+  }
+  return data;
+}
 
 export function useSupabaseQuery<T = any>(
   queryCreator: QueryCreator,
@@ -57,34 +54,15 @@ export function useSupabaseQuery<T = any>(
   );
 }
 
-declare module "react-query" {
-  function useMutation<
-    TData = unknown,
-    TError = unknown,
-    TVariables = void,
-    TContext = unknown
-  >(
-    queryCreator: QueryCreator,
-    options?: Omit<
-      UseMutationOptions<TData, TError, TVariables, TContext>,
-      "mutationFn"
-    >
-  ): UseMutationResult<TData, TError, TVariables, TContext>;
-}
-
 export function useSupabaseMutation<T = any>(options?: UseMutationOptions<T>) {
   const c = useClient();
 
   return useMutation(
-    (queryCreator: QueryCreator) =>
-      new Promise<any>((res, rej) => {
-        queryCreator(c).then((d: any) => {
-          if (d.error) {
-            return rej(d.error);
-          }
-          return res(d.data);
-        });
-      }),
+    (queryCreator: QueryCreator) => {
+      const query = queryCreator(c);
+      return execute(query);
+    },
+
     options as any
   );
 }

@@ -7,17 +7,17 @@ Supercharge your development speed with Supabase and react-query, combined!
 - Caching – save database reads
 - No more manually writing loading states
 - Easily invalidate after mutations
-- Leverage all of react-query's powerful query- and mutation api
-- Build queries with supabase's query builder
-- Full type support
+- Leverage all of react-query's powerful query- and mutation API
+- Build queries with the Supabase query builder
+- Type support with Supabase v2 types
 
 ## Installation
 
-`yarn add supabase-query @supabase/supabase-js@^1 react-query@^3`
+`yarn add supabase-query @supabase/supabase-js react-query@^3`
 
 or with npm:
 
-`npm i supabase-query @supabase/supabase-js@^1 react-query@^3`
+`npm i supabase-query @supabase/supabase-js react-query@^3`
 
 ## Quick start
 
@@ -46,7 +46,7 @@ function App() {
 
 function Todos() {
   // Use the provided supabase instance in the callback to build your query
-  // The table name "todos" will by default be used as the queryKey (see mutation)
+  // The table name ("todos" here) will by default be used as the queryKey (see mutation)
   const { data, isLoading } = useSupabaseQuery((supabase) =>
     supabase.from("todos").select()
   );
@@ -104,7 +104,7 @@ useSupabaseQuery accepts two arguments:
 The first is a function that provides the supabase client as an argument,
 and it expects a built query in return.
 
-The table name `"todos"` will by default be used as the queryKey for react-query.
+The table name will by default be used as the queryKey for react-query.
 
 The second argument: react-query options, see their docs for all options. The options object also takes in
 `queryKey` if you want to override the default key for a more dynamic one.
@@ -135,8 +135,43 @@ with the supabase client provided.
 
 ## TypeScript
 
-```ts
-// data is now of type Todo[]
-const { data } = useSupabaseQuery<Todo[]>(...)
+To leverage Supabase's schema type export you have to pass the schema to
+supabase-query's hooks and export those hooks in your app for use:
 
+`hooks/supabase.ts`
+
+```ts
+import {
+  TypedUseSupabaseMutation,
+  TypedUseSupabaseQuery,
+  useSupabaseMutation,
+  useSupabaseQuery,
+} from "supabase-query";
+import { DatabaseSchema } from "./db.types.ts";
+
+export const useTypedSupabaseQuery: TypedUseSupabaseQuery<DatabaseSchema> =
+  useSupabaseQuery;
+export const useTypedSupabaseMutation: TypedUseSupabaseMutation<DatabaseSchema> =
+  useSupabaseMutation;
+```
+
+Then use it in your app:
+
+```tsx
+import { useTypedSupabaseQuery } from "hooks/supabase";
+
+function Todos() {
+  // Data will be typed correctly
+  const { data, isLoading } = useTypedSupabaseQuery(
+    (supabase) =>
+      // The Supabase client will be typed to give inference on all tables
+      supabase.from("todos").select(),
+    {
+      // Data is typed in options
+      onSuccess(data) {
+        console.log(data[0].done);
+      },
+    }
+  );
+}
 ```

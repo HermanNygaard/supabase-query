@@ -96,7 +96,7 @@ test("useQuery returns error state", async () => {
   });
 });
 
-test("mutation and invalidation", async () => {
+test("mutation and invalidation, inferred query key", async () => {
   const newTodo = { name: "bar" };
   const { name: newTodoName } = newTodo;
   function Component(): any {
@@ -105,7 +105,7 @@ test("mutation and invalidation", async () => {
       (client) => client.from("todos").select(),
       {
         onSuccess(data) {
-          alert(data[0].done);
+          data[0].done;
         },
       }
     );
@@ -117,8 +117,7 @@ test("mutation and invalidation", async () => {
       });
     }, []);
     if (!data) return "loading";
-    // todo figure out double post regression
-    return data?.slice(0, 2)?.map((d) => <p key={d.name}>{d.name}</p>);
+    return data.map((d) => <p key={d.name}>{d.name}</p>);
   }
   customRender(<Component />);
 
@@ -132,7 +131,11 @@ test("mutation and invalidation", async () => {
   });
 });
 
-test.todo("NON TYPED QUERY + MUTATION, old API", () => {
+test.todo("custom query key");
+test.todo("pagination, query key pagination ");
+test.todo("mutation data and callback value, { data } same as useQuery");
+
+test.skip("NON TYPED QUERY + MUTATION, old API", () => {
   function Component() {
     const { data } = useSupabaseQuery((c) => c.from("todos").select());
     const { mutate } = useSupabaseMutation();

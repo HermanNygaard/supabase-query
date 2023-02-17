@@ -1,10 +1,8 @@
 import type {
-  // PostgrestFilterBuilder,
   PostgrestSingleResponse,
   PostgrestBuilder,
 } from "@supabase/postgrest-js";
 import { SupabaseClient } from "@supabase/supabase-js";
-//import { GenericSchema } from "@supabase/supabase-js/dist/module/lib/types";
 import React, { useContext } from "react";
 import {
   useMutation,
@@ -26,10 +24,8 @@ export function SupabaseQueryProvider({ children, client }: Provider) {
 }
 
 async function execute(query: any) {
-  const f = await query;
   const { data, error } = await query;
   if (error) {
-    console.log({ error });
     throw error;
   }
   return data;
@@ -88,12 +84,7 @@ export function useSupabaseMutation<Result>(options?: UseMutationOptions) {
     queryCreator: Query
   ): Promise<PostgrestSingleResponse<Result>["data"]> {
     const query = queryCreator(c);
-
-    const res = await execute(query);
-    alert("mutating");
-    // todo double check this logic, not needed? compare with plain supabase mutation
-    const { data, ...rest } = res;
-    return { data, ...rest };
+    return execute(query);
   }
   return useMutation<
     PostgrestSingleResponse<Result>["data"],

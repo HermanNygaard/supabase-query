@@ -22,19 +22,6 @@ export const useTypedSupabaseQuery: TypedUseSupabaseQuery<Database> =
 export const useTypedSupabaseMutation: TypedUseSupabaseMutation<Database> =
   useSupabaseMutation;
 
-const a = supabaseClient.from("test").insert({}).select();
-a.then;
-const f = useTypedSupabaseMutation();
-
-const b = useSupabaseMutation();
-b.mutate((c) => c.from("too").insert({}));
-/* const e = f.mutate((c) =>
-  c
-    .from("test")
-    .insert({})
-    .select()
-    .then((e) => e.data[0].cool) */
-
 function Provider({ children }: { children: React.ReactNode }) {
   return (
     <SupabaseQueryProvider client={supabaseClient}>

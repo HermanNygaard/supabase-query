@@ -13,9 +13,8 @@
     "dev": "tsc -w"
   },
   "peerDependencies": {
-    "@supabase/supabase-js": "^1.33.3",
+    "@supabase/supabase-js": "^2.7.1",
     "react": "17",
-    "react-dom": "17.0.0",
     "react-query": "^3.34.19"
   },
   "keywords": [],
@@ -25,7 +24,7 @@
   "author": "",
   "license": "ISC",
   "devDependencies": {
-    "@supabase/supabase-js": "^1.33.3",
+    "@supabase/supabase-js": "^2.7.1",
     "@testing-library/jest-dom": "^5.16.5",
     "@testing-library/react": "^12.1.5",
     "@types/jest": "^29.4.0",

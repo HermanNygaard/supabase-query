@@ -1,33 +1,35 @@
 import { useState } from "react";
-import logo from "./logo.svg";
 import "./App.css";
 
-import {
-  QueryClient,
-  QueryClientProvider,
-  useQuery,
-  useQueryClient,
-} from "react-query";
+import { QueryClient, QueryClientProvider, useQueryClient } from "react-query";
 
 import { createClient } from "@supabase/supabase-js";
 import {
   SupabaseQueryProvider,
+  TypedUseSupabaseMutation,
+  TypedUseSupabaseQuery,
   useSupabaseMutation,
   useSupabaseQuery,
 } from "supabase-query";
+import { Database } from "../db.types";
 
 const queryClient = new QueryClient();
 
-const supabaseClient = createClient(
+const supabaseClient = createClient<Database>(
   import.meta.env.VITE_url,
   import.meta.env.VITE_key
 );
+
+export const useTypedSupabaseQuery: TypedUseSupabaseQuery<Database> =
+  useSupabaseQuery;
+
+export const useTypedSupabaseMutation: TypedUseSupabaseMutation<Database> =
+  useSupabaseMutation;
+
 function App() {
   return (
     <SupabaseQueryProvider client={supabaseClient}>
       <QueryClientProvider client={queryClient}>
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>Hello Vite + React!</p>
         <Todos />
       </QueryClientProvider>
     </SupabaseQueryProvider>
@@ -52,23 +54,23 @@ function DeleteButton({ id }) {
 }
 
 export function Todos() {
-  //const { data, isLoading, error, refetch } = useSelect("todos");
-  //const { mutate, isLoading: isPosting } = useInsert("todos");
   const client = useQueryClient();
   const [limit, setLimit] = useState(7);
-  const { data, isLoading } = useSupabaseQuery<{ name: string; id: number }[]>(
+  const { data, isLoading, isError, error } = useTypedSupabaseQuery(
     (supabase) => supabase.from("todos").select()
   );
+
   const {
     mutate,
     isLoading: isPosting,
     data: ok,
-    error,
-    isError,
-  } = useSupabaseMutation<{ name: string }>({
-    onSuccess: () => client.invalidateQueries("todos"),
+  } = useTypedSupabaseMutation({
+    onSuccess: (env) => {
+      client.invalidateQueries("todos");
+    },
     onError: () => alert("noo"),
   });
+  console.log({ ok });
 
   const [val, setVal] = useState("");
   if (isLoading) return <div>Loading...</div>;
@@ -97,10 +99,9 @@ export function Todos() {
       <button
         onClick={() => {
           setVal("");
-          const a = mutate((supabase) =>
+          mutate((supabase) =>
             supabase.from("todos").insert([{ name: val, done: false }])
           );
-          console.log("a", a);
         }}
       >
         Add todo

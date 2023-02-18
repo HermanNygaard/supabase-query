@@ -1,6 +1,6 @@
 {
   "name": "supabase-query",
-  "version": "0.0.5",
+  "version": "1.0.1",
   "description": "",
   "main": "dist/cjs/index.js",
   "module": "dist/esm/index.js",
@@ -14,7 +14,7 @@
   },
   "peerDependencies": {
     "@supabase/supabase-js": "^2.7.1",
-    "react": "17",
+    "react": "18",
     "react-query": "^3.34.19"
   },
   "keywords": [],
